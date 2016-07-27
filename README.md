@@ -21,7 +21,10 @@ At the moment this set of playbooks is designed to be run on ubuntu. We recommen
 Each host (including the master) must have at least the following requirements :
 * 2 vcpu
 * 4 Go ram
-* 2 disks with one for the system with 16Go (12Go for / + 4Go for swap) and one for /var/lib/docker with 8Go. 
+* 2 disks with one for the system with 12Go (8Go for / + 4Go for swap) and one for /var/lib/docker with 8Go.
+
+Note that by default we will only install docker on the machine, so the root filesystem doesn't needs to be big (just system logs and the base packages).
+Docker will have it's own partition and everything will run inside containers, so if at some point you need more space you need to extends docker partition (see above)
 
 ### Exemple for test environments
 
