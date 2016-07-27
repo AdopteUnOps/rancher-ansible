@@ -1,0 +1,37 @@
+---
+- name: pip docker-py
+  pip: name=docker-py version="{{dockerpy_version}}"
+  become: yes
+
+- name: Add docker apt repo
+  apt_repository:
+    repo: 'deb https://apt.dockerproject.org/repo ubuntu-{{ ansible_distribution_release }} main'
+    mode: 644
+    state: present
+  become: yes
+
+
+- name: Import the Docker repository key
+  apt_key:
+    url: https://apt.dockerproject.org/gpg
+    id: 2C52609D
+    state: present
+  become: yes
+
+- name: Install Docker package
+  apt:
+    name: "{{ docker_package_name }}={{ docker_version }}"
+    update_cache: yes
+    force: yes
+  become: yes
+  notify: restart docker
+
+- name: Create a docker group
+  group:
+    name: docker
+    state: present
+  become: yes
+
+- name: start docker
+  service: name=docker state=started
+  become: yes

@@ -1,0 +1,15 @@
+---
+# clean One HOST on project
+#./ansible-playbook_wrapper utils_clean_host.yml -K -e "NAME_PROJECT=myproject" -e "NAME_HOST=myHost" (check with inventory)
+# If you want delete all host of the project, you can't set NAME_HOST
+- hosts: rancher-masters
+  gather_facts: no
+  roles:
+  - delete-one-host-rancher
+
+- vars:
+    NAME_HOST: "{{ NAME_PROJECT }}"
+  hosts: "{{ NAME_HOST }}"
+  gather_facts: no
+  roles:
+  - clean-docker-host

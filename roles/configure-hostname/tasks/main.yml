@@ -1,0 +1,4 @@
+---
+- name: rename host
+  hostname: name={{ inventory_hostname }}
+  become: yes

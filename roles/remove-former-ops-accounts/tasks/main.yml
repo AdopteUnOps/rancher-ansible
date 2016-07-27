@@ -1,0 +1,5 @@
+---
+- name: remove former ops users
+  user: name="{{ item.name}}" groups="adm,sudo" shell="/bin/bash" home="/home/{{item.name}}" password="{{ item.password }}" state=absent
+  with_items: '{{ssh_users}}'
+  become: yes

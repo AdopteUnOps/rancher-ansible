@@ -1,0 +1,10 @@
+---
+- name: create users
+  user: name="{{ item.name}}" groups="adm,sudo" shell="/bin/bash" home="/home/{{item.name}}" password="{{ item.password }}"
+  with_items: '{{ssh_users}}'
+  become: yes
+
+- name: Add ssh user keys
+  authorized_key: user='{{ item.name }}' key='{{ item.key }}'
+  with_items: '{{ssh_users}}'
+  become: yes

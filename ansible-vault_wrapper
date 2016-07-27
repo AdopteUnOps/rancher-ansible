@@ -1,0 +1,4 @@
+#!/bin/bash
+SCRIPTPATH=`dirname $0`
+export ANSIBLE_CONFIG=$SCRIPTPATH/ansible.cfg
+ansible-vault "$@"

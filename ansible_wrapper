@@ -1,0 +1,8 @@
+#!/bin/bash -x
+SCRIPTPATH=`dirname $0`
+export ANSIBLE_HOSTS="$SCRIPTPATH/production/inventory"
+export ANSIBLE_CONFIG=$SCRIPTPATH/ansible.cfg
+MY_ANSIBLE_HOST_PATTERN="$1"
+shift
+ansible "$MY_ANSIBLE_HOST_PATTERN" -i $ANSIBLE_HOSTS "$@"
+

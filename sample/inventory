@@ -1,0 +1,16 @@
+host-1
+host-2
+host-3
+host-4
+
+
+
+[rancher-masters]
+host-1
+
+[mysql]
+host-2
+
+[my-first-project]
+host-3
+host-4

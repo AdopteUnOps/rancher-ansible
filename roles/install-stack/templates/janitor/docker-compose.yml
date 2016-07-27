@@ -1,0 +1,16 @@
+cleanup:
+  environment:
+    CLEAN_PERIOD: '3600'
+    DEBUG: '0'
+    DELAY_TIME: '900'
+    KEEP_CONTAINERS: '*:*'
+    KEEP_IMAGES: rancher/
+    LOOP: 'true'
+  labels:
+    io.rancher.scheduler.global: 'true'
+    io.rancher.scheduler.affinity:host_label_ne: janitor.exclude=true
+  image: meltwater/docker-cleanup:1.6.0
+  volumes:
+  - /var/run/docker.sock:/var/run/docker.sock
+  - /var/lib/docker:/var/lib/docker
+  net: none

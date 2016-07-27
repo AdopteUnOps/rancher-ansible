@@ -1,0 +1,11 @@
+ssh_users:
+    - name: myuser
+      key: "ssh-rsa ZZZZZYOURSSHKEY"
+      password: "changeme"
+former_ops_users:
+    - name: mygenericaccount
+RANCHER_MASTER_URL: "{{groups['rancher-masters'][0]}}"
+RANCHER_MASTER_PORT: 8080
+rancher_version: v1.1.1
+
+

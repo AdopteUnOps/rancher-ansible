@@ -1,0 +1,18 @@
+---
+#Clean docker on host machine
+- name: Stop all docker containers
+  shell: docker stop $(docker ps -a -q)
+  ignore_errors: true
+  become: yes
+- name: Remove all docker containers
+  shell: docker rm $(docker ps -a -q)
+  ignore_errors: true
+  become: yes
+- name: Remove all docker images
+  shell: docker rmi -f $(docker images -q)
+  ignore_errors: true
+  become: yes
+- name: Remove all volumes
+  shell: docker volume rm $(docker volume ls -qf dangling=true)
+  ignore_errors: true
+  become: yes
