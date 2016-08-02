@@ -2,6 +2,9 @@ mysql_host: "{{ groups.mysql[0] }}"
 mysql_database: rancher
 mysql_user: rancher
 mysql_password: pha8Queirierane
+
+mysql_backup_enabled: false
+
 mysql_s3_access_key: A_S3_TOKEN
 mysql_s3_secret_key: S3_SECRET
 mysql_s3_bucket: rancher-s3

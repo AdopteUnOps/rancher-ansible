@@ -32,3 +32,4 @@
       MYSQL_PASSWORD={{ mysql_root_password }}
       MYSQL_HOST={{ mysql_host }}
   become: yes
+  when: mysql_backup_enabled == True
