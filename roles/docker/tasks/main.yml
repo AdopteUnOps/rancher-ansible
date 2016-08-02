@@ -1,5 +1,5 @@
 ---
-- name: pip docker-py
+- name: Install docker-py
   pip: name=docker-py version="{{dockerpy_version}}"
   become: yes
 
@@ -24,7 +24,7 @@
     update_cache: yes
     force: yes
   become: yes
-  notify: restart docker
+  notify: Restart docker
 
 - name: Create a docker group
   group:
@@ -32,6 +32,6 @@
     state: present
   become: yes
 
-- name: start docker
+- name: Start docker
   service: name=docker state=started
   become: yes

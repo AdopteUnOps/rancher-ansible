@@ -5,7 +5,7 @@
   roles:
   - { role: mysql-docker }
   tasks:
-  - name: launch master
+  - name: Launch rancher master
     docker:
       name: rancherServer
       image: rancher/server:{{ rancher_version }}
@@ -57,7 +57,7 @@
       RANCHER_API_KEY_ACCOUNT_SECRET: "{{ fluxApiKey.json['secretValue'] }}"
     when: apikey_file.stat.exists == False
 
-  - name: generate apikey configuration
+  - name: Generate apikey configuration
     template:  src=files/apikey.j2 dest="{{ inventory_dir }}/group_vars/all/apikey"
     delegate_to: localhost
     when: apikey_file.stat.exists == False

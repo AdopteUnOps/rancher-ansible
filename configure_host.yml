@@ -6,7 +6,7 @@
   gather_facts: no
   pre_tasks:
   # required to execute some ansible modules this must be executed with gather_facts: no since it also requires python
-  - name: install python
+  - name: Install python
     raw:  apt-get install -y python-simplejson python-pip python-httplib2
     become: yes
   roles:
@@ -18,9 +18,8 @@
   - configure-hostname
   - configure-ssh
   - docker
-  - remove-former-ops-accounts
   post_tasks:
-  - name: remove former ops users
+  - name: Remove former ops users
     user: name="{{ item.name}}" groups="adm,sudo" shell="/bin/bash" home="/home/{{item.name}}" password="{{ item.password }}" state=absent
     with_items: '{{former_ops_users}}'
     become: yes

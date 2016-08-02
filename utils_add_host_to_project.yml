@@ -21,7 +21,7 @@
          url={{ rancher_token_url.json['links']['self'] }} return_content=yes
     register: rancher_token
 
-  - name: registry host into the master
+  - name: Register host into the master
     docker:
         name: rancherAgent
         image: rancher/agent:v1.0.2

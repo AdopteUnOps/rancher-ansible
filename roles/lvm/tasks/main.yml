@@ -1,19 +1,19 @@
 ---
-- name: ensure lvm required packages are installed
+- name: Ensure lvm required packages are installed
   apt: pkg={{ item }} state=latest cache_valid_time=86400 update_cache=yes
   with_items:
     - lvm2
     - parted
   become: yes
 
-- name: create LVM volume group
+- name: Create LVM volume group
   lvg:
     pvs: "{{diskname}}"
     state: present
     vg: "{{vg_name}}"
   become: yes
 
-- name: create LVM logical volume
+- name: Create LVM logical volume
   lvol:
     vg: "{{vg_name}}"
     lv: "{{lv_name}}"
@@ -21,11 +21,11 @@
     force: yes
   become: yes
 
-- name: format partition
+- name: Format partition
   filesystem: fstype=ext4 dev=/dev/{{vg_name}}/{{lv_name}} resizefs=yes
   become: yes
 
-- name: mount partition
+- name: Mount partition
   mount: name={{mount_point}} src="/dev/{{vg_name}}/{{lv_name}}" fstype=ext4 state=mounted
   become: yes
 

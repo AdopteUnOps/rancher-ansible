@@ -17,7 +17,7 @@
   register: create_project
   when: project_file.stat.exists == False
 
-- name: "register project id"
+- name: Register project id
   set_fact:
     PROJECT_ID: "{{ create_project.json['id'] }}"
   when: project_file.stat.exists == False

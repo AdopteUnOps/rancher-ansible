@@ -1,5 +1,5 @@
 ---
-- name: create users
+- name: Create users
   user: name="{{ item.name}}" groups="adm,sudo" shell="/bin/bash" home="/home/{{item.name}}" password="{{ item.password }}"
   with_items: '{{ssh_users}}'
   become: yes
