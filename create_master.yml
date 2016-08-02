@@ -22,7 +22,7 @@
     become: yes
 
   - name: Install rancher-compose
-    shell: "curl https://releases.rancher.com/compose/v0.8.4/rancher-compose-linux-amd64-v0.8.4.tar.gz | tar zx --strip-components 2 -C /usr/local/bin"
+    shell: "curl https://releases.rancher.com/compose/{{ rancher_compose_version }}/rancher-compose-linux-amd64-{{ rancher_compose_version }}.tar.gz | tar zx --strip-components 2 -C /usr/local/bin"
     args:
       creates: /usr/local/bin/rancher-compose
     become: yes
