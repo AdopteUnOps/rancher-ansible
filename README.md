@@ -157,25 +157,25 @@ rancher-compose will require an apikey per project.
 
 Pipeline sample
 ``` 
-withEnv(['RANCHER_HOME=/usr/lib/rancher-compose', 'RANCHER_URL=http://rancher-master:8080/','RANCHER_SECRET_KEY=ABCD','RANCHER_ACCESS_KEY=ABCD']) {
+withEnv(['RANCHER_COMPOSE_HOME=/usr/lib/rancher-compose', 'RANCHER_URL=http://rancher-master:8080/','RANCHER_SECRET_KEY=ABCD','RANCHER_ACCESS_KEY=ABCD']) {
     node {
        stage 'Prepare deploy'
        git credentialsId: 'projectname', url: 'git@your-git-repo'
        stage 'Deploy to UAT'
-       sh '${RANCHER_HOME}/deploy-stack.sh your-repo-git/deploy'
+       sh '${RANCHER_COMPOSE_HOME}/deploy-stack.sh your-repo-git/deploy'
     }
     stage 'Validation'
     try {
         input message: 'UAT valid ?', ok: 'Yes please deploy to prod !'
     } catch (InterruptedException e) {
         node {
-            sh '${RANCHER_HOME}/rollback-stack.sh your-repo-git/deploy'
+            sh '${RANCHER_COMPOSE_HOME}/rollback-stack.sh your-repo-git/deploy'
         }
         throw e
     }
     node {
        stage 'Deploy to Prod'
-       sh '${RANCHER_HOME}/confirm-deploy-stack.sh your-repo-git/deploy'
+       sh '${RANCHER_COMPOSE_HOME}/confirm-deploy-stack.sh your-repo-git/deploy'
     }
     stage 'Validation in production'
     input message: 'Production OK ?', ok: 'Yes'
