@@ -175,7 +175,7 @@ withEnv(['RANCHER_HOME=/usr/lib/rancher-compose', 'RANCHER_URL=http://rancher-ma
     }
     node {
        stage 'Deploy to Prod'
-       sh '${RANCHER_HOME}//confim-deploy-stack.sh your-repo-git/deploy'
+       sh '${RANCHER_HOME}/confirm-deploy-stack.sh your-repo-git/deploy'
     }
     stage 'Validation in production'
     input message: 'Production OK ?', ok: 'Yes'
