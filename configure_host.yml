@@ -1,23 +1,17 @@
 ---
-#first time ./ansible-playbook_wrapper configure_host.yml -u yourgenericaccount -Kk
-#second time ./ansible-playbook_wrapper configure_host.yml -K
+#first time ./ansible-playbook_wrapper configure_host.yml -u yourgenericaccount -Kk  -e "NAME_PROJECT=myproject"
+#second time ./ansible-playbook_wrapper configure_host.yml -K  -e "NAME_PROJECT=myproject"
 
-- hosts: all
-  gather_facts: no
-  pre_tasks:
-  # required to execute some ansible modules this must be executed with gather_facts: no since it also requires python
-  - name: Install python
-    raw:  apt-get install -y python-simplejson python-pip python-httplib2
-    become: yes
+- hosts: "{{ NAME_PROJECT }}"
   roles:
-  - configure-ops-accounts
-
-- hosts: all
-  gather_facts: no
-  roles:
-  - configure-hostname
-  - configure-ssh
-  - docker
+  - {role: "install-kernel", tags: "kernel"}
+  - {role: "configure-rsyslog", tags: "rsyslog"}
+  - {role: "configure-hostname", tags: "configure-hostname"}
+  - {role: "configure-ssh", tags: "configure-ssh"}
+  - {role: "install-tools", tags: "install-tools"}
+  - {role: "docker", tags: "install-docker"}
+  - {role: "upgrade-packages", tags: "upgrade-packages"}
+  - {role: "configure-ops-accounts", tags: "ops"}
   post_tasks:
   - name: Remove former ops users
     user: name="{{ item.name}}" groups="adm,sudo" shell="/bin/bash" home="/home/{{item.name}}" password="{{ item.password }}" state=absent
