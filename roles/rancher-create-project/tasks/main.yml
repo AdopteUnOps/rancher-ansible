@@ -1,0 +1,82 @@
+---
+- name: Verify if project exists
+  stat: path="{{ inventory_dir }}/group_vars/{{ NAME_PROJECT }}/apikey.yml"
+  register: project_file
+  delegate_to: localhost
+
+- name: Create Project
+  environment:
+    RANCHER_URL: "{{rancher_master_url}}"
+    RANCHER_ACCESS_KEY: "{{ RANCHER_API_KEY_ACCOUNT_TOKEN }}"
+    RANCHER_SECRET_KEY: "{{ RANCHER_API_KEY_ACCOUNT_SECRET }}"
+  shell: "rancher env create -t {{rancher_project_template_name}} {{ rancher_normalized_project_name }}"
+  register: create_project
+  when: project_file.stat.exists == False
+
+- name: Register project id
+  set_fact:
+    PROJECT_ID: "{{ create_project.stdout }}"
+  when: project_file.stat.exists == False
+
+- name: Create API KEY
+  uri:
+    method: POST
+    status_code: 201
+    user: "{{ RANCHER_API_KEY_ACCOUNT_TOKEN }}"
+    password: "{{ RANCHER_API_KEY_ACCOUNT_SECRET }}"
+    body: ' {"accountId":"{{ PROJECT_ID }}", "name":"{{ NAME_PROJECT }}_key"}'
+    url: "{{rancher_master_url}}/v1/apikeys"
+    headers:
+      Accept: "application/json"
+      Content-Type: "application/json"
+  register: api_key
+  when: project_file.stat.exists == False
+
+- name: Wait for env to be ready on rancher side
+  pause: seconds=10
+  when: project_file.stat.exists == False
+
+- name: Setup custom registry
+  uri:
+    method: POST
+    status_code: 201
+    user: "{{ RANCHER_API_KEY_ACCOUNT_TOKEN }}"
+    password: "{{ RANCHER_API_KEY_ACCOUNT_SECRET }}"
+    body: ' {"type":"registry","serverAddress":"{{ docker_registry_url }}","blockDevicePath":null,"created":null,"description":null,"driverName":null,"externalId":null,"kind":null,"name":null,"removed":null,"uuid":null,"volumeAccessMode":null} '
+    url: "{{rancher_master_url}}/v1/projects/{{ PROJECT_ID }}/registry"
+    headers:
+      Accept: "application/json"
+      Content-Type: "application/json"
+  register: registry_key
+  when: project_file.stat.exists == False and use_custom_registry == True
+
+- name: Register custom registry id
+  set_fact:
+    REGISTRY_ID: "{{ registry_key.json['id'] }}"
+  when: project_file.stat.exists == False and use_custom_registry == True
+
+- name: Login to custom registry
+  uri:
+    method: POST
+    status_code: 201
+    user: "{{ RANCHER_API_KEY_ACCOUNT_TOKEN }}"
+    password: "{{ RANCHER_API_KEY_ACCOUNT_SECRET }}"
+    body: ' {"type":"registryCredential","registryId":"{{ REGISTRY_ID }}","publicValue":"{{ docker_registry_username }}","secretValue":"{{ docker_registry_password }}","email":"{{ docker_registry_email }}","created":null,"description":null,"kind":null,"name":null,"removed":null,"uuid":null} '
+    url: "{{rancher_master_url}}/v1/projects/{{ PROJECT_ID }}/registrycredentials"
+    headers:
+      Accept: "application/json"
+      Content-Type: "application/json"
+  when: project_file.stat.exists == False and use_custom_registry == True
+
+- name: Generate project configuration
+  file:  path={{ inventory_dir }}/group_vars/{{ NAME_PROJECT }} state=directory
+  when: project_file.stat.exists == False
+  delegate_to: localhost
+
+- name: Generate project configuration
+  template:  src=rancher_project_key.j2 dest={{ inventory_dir }}/group_vars/{{ NAME_PROJECT }}/apikey.yml
+  when: project_file.stat.exists == False
+  delegate_to: localhost
+
+- debug: msg="Project apikey generated. You can now vault it with './ansible-vault_wrapper {{ inventory_dir }}/group_vars/{{ NAME_PROJECT }}/apikey.yml'"
+  when: project_file.stat.exists == False
