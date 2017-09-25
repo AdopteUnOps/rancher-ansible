@@ -1,30 +1,71 @@
 ---
+- name: Unlock docker apt version
+  dpkg_selections:
+    name: "{{ item }}"
+    selection: install
+  with_items:
+  - "python-docker"
+  - "{{ docker_package_name }}"
+  become: yes
+
 - name: Install docker-py
-  pip: name=docker-py version="{{dockerpy_version}}"
+  apt: name=python-docker={{dockerpy_version}}
   become: yes
 
 - name: Add docker apt repo
   apt_repository:
-    repo: 'deb https://apt.dockerproject.org/repo ubuntu-{{ ansible_distribution_release }} main'
+    repo: 'deb {{docker_repository_url}} ubuntu-{{ ansible_distribution_release }} edge'
     mode: 644
     state: present
   become: yes
 
+- name: Install gnupg-curl for apt-key https support
+  apt:
+    name: gnupg-curl
+    force: yes
+  become: yes
 
 - name: Import the Docker repository key
   apt_key:
-    url: https://apt.dockerproject.org/gpg
+    data: "{{lookup('file', 'docker.gpg')}}"
     id: 2C52609D
     state: present
+    validate_certs: no
+  become: yes
+
+- name: update apt cache
+  apt: update_cache=yes
   become: yes
 
 - name: Install Docker package
   apt:
     name: "{{ docker_package_name }}={{ docker_version }}"
-    update_cache: yes
-    force: yes
+    force: "{{ docker_force_version }}"
   become: yes
   notify: Restart docker
+
+- name: Configure Docker bridge MTU
+  copy:
+    dest: /etc/docker/daemon.json
+    content: |
+      {
+        "mtu": 1500
+      }
+  become: yes
+  notify: Restart docker
+
+- name: Lock docker apt version
+  dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  with_items:
+  - "python-docker"
+  - "{{ docker_package_name }}"
+  become: yes
+
+- name: Create systemctl structure for docker
+  file: path=/etc/systemd/system/docker.service.d state=directory
+  become: yes
 
 - name: Create a docker group
   group:
@@ -35,3 +76,15 @@
 - name: Start docker
   service: name=docker state=started
   become: yes
+
+- name: Create registry certificate folder
+  file: path=/etc/docker/certs.d/{{ docker_registry }}/ state=directory
+  become: yes
+  when: docker_registry is defined
+
+- name: Grab registry certificate
+  shell: "echo |  openssl s_client -connect {{ docker_registry_openssl_url }} 2>/dev/null | openssl x509 -text > /etc/docker/certs.d/{{ docker_registry }}/ca.crt"
+  become: yes
+  when: docker_registry is defined
+
+- meta: flush_handlers

@@ -1,7 +1,15 @@
 ---
 docker_package_name: docker-engine
-ansible_distribution_release: wily
-docker_version: 1.10.3-0~{{ansible_distribution_release}}
-dockerpy_version: 1.8.1
+docker_version: 17.06.2~ce-0~ubuntu
+dockerpy_version: 1.8.0-*
 docker_disks: /dev/sdb
+docker_partitions: /dev/sdb1
+docker_opts: ""
+use_docker_lvm: true
+docker_repository_url: https://download.docker.com/linux/ubuntu/
+docker_repository_category: edge
+#this should be overrided only in case of downgrade of docker version
+docker_force_version: no
 
+#override this is you need use default ssl port
+docker_registry_openssl_url: "{{ docker_registry }}"
