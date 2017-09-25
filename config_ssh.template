@@ -1,3 +1,16 @@
+
+##
+## Simple use case
+##
+
+Host *
+  User USER
+  IdentityFile PATH_TO_YOUR_PRIVATE_KEY
+
+##
+## Bastion use case
+##
+
 # this is a template file to configure ssh to do transparent proxy on a bastion host
 # to use it :
 #  > cp config_ssh.template config_ssh
@@ -5,17 +18,15 @@
 # save and enjoy transparent proxy by using ssh_wrapper :)
 
 
-Host bastion_host
-  User USER
-  Port 2222
-  HostName bastion_hostname_or_ip
-  IdentityFile PATH_TO_YOUR_PRIVATE_KEY
-  ForwardAgent yes
-  ProxyCommand none
-  BatchMode yes
-
-Host *
-  User USER
-  ProxyCommand ssh -F config_ssh -W %h:%p bastion_host
-
-
+#Host bastion_host
+#  User USER
+#  Port 2222
+#  HostName bastion_hostname_or_ip
+#  IdentityFile PATH_TO_YOUR_PRIVATE_KEY
+#  ForwardAgent yes
+#  ProxyCommand none
+#  BatchMode yes
+#
+#Host *
+#  User USER
+#  ProxyCommand ssh -F config_ssh -W %h:%p bastion_host
