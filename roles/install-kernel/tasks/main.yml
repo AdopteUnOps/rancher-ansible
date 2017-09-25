@@ -1,0 +1,15 @@
+---
+- name: Configure kernel
+  apt: name={{item}}
+  become: yes
+  notify: Reboot host
+  with_items:
+    - linux-image-generic
+    - linux-image-virtual
+    - linux-image-extra-virtual
+    - linux-headers-virtual
+
+- meta: flush_handlers
+
+- name: Waiting for host to be up again after reboot if kernel is upgraded
+  local_action: wait_for host={{ ansible_host }} port=22 timeout=300 delay=10

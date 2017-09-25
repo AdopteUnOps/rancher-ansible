@@ -1,0 +1,7 @@
+---
+- name: Reboot host
+  shell: "sleep 2 && reboot"
+  become: yes
+  async: 1
+  poll: 0
+  ignore_errors: true
