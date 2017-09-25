@@ -1,4 +1,12 @@
 ---
+- name: Create mysql configuration
+  file: path=/etc/mysql/conf.d state=directory mode=0755
+  become: yes
+
+- name: Apply mysql configuration
+  template: src=mysql.conf.j2 dest=/etc/mysql/conf.d/mysql.cnf
+  become: yes
+
 - name: Create a mysql docker container
   docker:
       name: mysql
@@ -6,6 +14,7 @@
       restart_policy: always
       state: reloaded
       volumes:
+      - /etc/mysql/conf.d:/etc/mysql/conf.d
       - /var/lib/mysql:/var/lib/mysql
       ports:
       - "3306:3306"
@@ -33,3 +42,17 @@
       MYSQL_HOST={{ mysql_host }}
   become: yes
   when: mysql_backup_enabled == True
+
+- name: Configure mysql optimize
+  docker:
+      name: mysql-optimizer
+      image: adopteunops/mysql-optimizer:latest
+      restart_policy: always
+      state: reloaded
+      links:
+      - "mysql:mysql"
+      env:
+        MYSQL_USERNAME="root"
+        MYSQL_PASSWORD="{{ mysql_root_password }}"
+        CRON_TIME="0 0 * * *"
+  become: yes
