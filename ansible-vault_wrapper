@@ -1,4 +1,8 @@
 #!/bin/bash
 SCRIPTPATH=`dirname $0`
 export ANSIBLE_CONFIG=$SCRIPTPATH/ansible.cfg
+if [ -s $SCRIPTPATH/.ansible_vault_pass ]
+then
+   export ANSIBLE_VAULT_PASSWORD_FILE=$SCRIPTPATH/.ansible_vault_pass
+fi
 ansible-vault "$@"

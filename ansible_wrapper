@@ -2,7 +2,14 @@
 SCRIPTPATH=`dirname $0`
 export ANSIBLE_HOSTS="$SCRIPTPATH/production/inventory"
 export ANSIBLE_CONFIG=$SCRIPTPATH/ansible.cfg
+if [ -s $SCRIPTPATH/config_ssh ]
+then
+   export ANSIBLE_SSH_ARGS="-F config_ssh -o ControlMaster=auto -o ControlPersist=30m"
+fi
+if [ -s $SCRIPTPATH/.ansible_vault_pass ]
+then
+   export ANSIBLE_VAULT_PASSWORD_FILE=$SCRIPTPATH/.ansible_vault_pass
+fi
 MY_ANSIBLE_HOST_PATTERN="$1"
 shift
 ansible "$MY_ANSIBLE_HOST_PATTERN" -i $ANSIBLE_HOSTS "$@"
-
