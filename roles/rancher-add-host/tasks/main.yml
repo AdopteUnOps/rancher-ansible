@@ -21,7 +21,7 @@
 - name: Register regular host into the master
   docker_container:
       name: rancherAgent
-      image: "{{docker_registry}}/rancher/agent:{{rancher_agent_version}}"
+      image: "{{rancher_agent_image}}"
       state: started
       privileged: true
       volumes:
