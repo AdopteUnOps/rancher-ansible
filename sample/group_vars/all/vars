@@ -1,6 +1,1 @@
-RANCHER_MASTER_URL: "{{groups['rancher-masters'][0]}}"
-RANCHER_MASTER_PORT: 8080
-rancher_version: v1.1.1
-rancher_compose_version: v0.8.6
-
 normalized_project_name: "{{ NAME_PROJECT | lower}}"
