@@ -1,0 +1,77 @@
+---
+- include_vars: "{{ inventory_dir }}/group_vars/{{ NAME_PROJECT }}/apikey.yml"
+- name: Return the registration token URL of Rancher server
+  uri:
+    method: "POST"
+    status_code: 201
+    user: "{{ RANCHER_API_KEY_ACCOUNT_TOKEN }}"
+    password: "{{ RANCHER_API_KEY_ACCOUNT_SECRET }}"
+    url: "{{rancher_master_url}}/v1/registrationtokens?projectId={{ PROJECT_ID }}"
+    return_content: yes
+  register: rancher_token_url
+
+- name: Return the registration URL of Rancher server
+  uri:
+    user: "{{ RANCHER_API_KEY_ACCOUNT_TOKEN }}"
+    password: "{{ RANCHER_API_KEY_ACCOUNT_SECRET }}"
+    url: "{{ rancher_token_url.json['links']['self'] }}"
+    return_content: yes
+  register: rancher_token
+
+- name: Register regular host into the master
+  docker_container:
+      name: rancherAgent
+      image: "{{docker_registry}}/rancher/agent:{{rancher_agent_version}}"
+      state: started
+      privileged: true
+      volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/rancher:/var/lib/rancher
+      command: "{{rancher_master_url}}/v1/scripts/{{ (rancher_token.content|from_json)['token'] }}"
+      env:
+          CATTLE_HOST_LABELS="project={{rancher_normalized_project_name}}&server_name={{server_name}}&{{custom_host_tags}}"
+      ports:
+          - "8080:8080"
+  become: yes
+
+- name: Get rancher hosts list
+  uri:
+    user: "{{ RANCHER_API_KEY_ACCOUNT_TOKEN }}"
+    password: "{{ RANCHER_API_KEY_ACCOUNT_SECRET }}"
+    url: "{{rancher_master_url}}/v1/projects/{{ PROJECT_ID }}/hosts"
+    return_content: yes
+    headers:
+      Accept: "application/json"
+      Content-Type: "application/json"
+  register: rancher_hosts_list
+  until: rancher_hosts_list.json.data |  selectattr('hostname', 'equalto', ansible_host) | map(attribute='id') | list | length > 0
+  retries: 15
+  delay: 5
+
+- name: Extract current host id and prepare host labels
+  set_fact:
+    rancher_host_ids: "{{rancher_hosts_list.json.data |  selectattr('hostname', 'equalto', ansible_host) | map(attribute='id') | list }}"
+    custom_host_tags_array: "{{ custom_host_tags.split('&') }}"
+
+- name: Rancher host labels
+  set_fact:
+    rancher_host_labels: "{{ rancher_host_labels | default({ \"project\": rancher_normalized_project_name, \"server_name\": server_name }) | combine( {item.split('=')[0]: item.split('=')[1]} ) }}"
+  with_items: "{{ custom_host_tags_array }}"
+
+- name: Rancher host labels request
+  set_fact:
+    rancher_host_labels_request: "{{ {\"labels\": rancher_host_labels} }}"
+    rancher_host_id: "{{ rancher_host_ids[0] }}"
+
+- name: Update host tags in rancher
+  uri:
+    method: PUT
+    status_code: 200
+    user: "{{ RANCHER_API_KEY_ACCOUNT_TOKEN }}"
+    password: "{{ RANCHER_API_KEY_ACCOUNT_SECRET }}"
+    body: "{{ rancher_host_labels_request | to_json }}"
+    url: "{{rancher_master_url}}/v1/projects/{{ PROJECT_ID }}/hosts/{{ rancher_host_id }}"
+    headers:
+      Accept: "application/json"
+      Content-Type: "application/json"
+  when: custom_host_tags != ""
