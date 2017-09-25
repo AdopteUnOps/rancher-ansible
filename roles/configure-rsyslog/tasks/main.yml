@@ -1,0 +1,8 @@
+---
+- name: Configure rsyslog logrotate
+  copy: src=rsyslog.logrotate.conf dest=/etc/logrotate.d/rsyslog
+  become: yes
+
+- name: Configure logrotate to be run hourly
+  copy: src=logrotate.cron.conf dest=/etc/cron.daily/logrotate
+  become: yes
