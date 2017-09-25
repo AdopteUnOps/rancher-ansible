@@ -4,12 +4,12 @@
 
 If you don't know yet rancher please read the official documentation http://docs.rancher.com/rancher/latest/en/.
 
-Rancher will be used to create segregated environments for projects. 
+Rancher will be used to create segregated environments for projects.
 
 Each project/environments should exists as "environments" in rancher (example: my-uat-project my-production-project ).
 Each rancher environment is segregated at network level via Docker Overlay and IPSec tunnels (managed by rancher itself).
 
-Only trusted ops can connect to the machines, unix accounts are managed by ansible. 
+Only trusted ops can connect to the machines, unix accounts are managed by ansible.
 
 Developpers will not be allowed to access rancher by itself, rancher master will be accessible only for ops for the moment.
 End users will have tools in their project to see their application logs & metrics (elk, prometheus).
@@ -30,7 +30,7 @@ Docker will have it's own partition and everything will run inside containers, s
 
 2 hosts per rancher environment :
 * one for tools (elk, prometheus, janitor) and the load balancer
-* one for project 
+* one for project
 
 Ideally we should provide a secured jenkins for the project with a sample of pipeline to deploy across all environments.
 The machine for tools will be identified with specific label on it (role=tools).
@@ -39,7 +39,7 @@ The machine for tools will be identified with specific label on it (role=tools).
 
 ### Requirements
 
-* Ansible >= 1.9.X
+* Ansible >= 2.3
 
 ### Rancher platforms
 
@@ -48,9 +48,30 @@ By default wrappers will use production one.
 
 But you can use other ones changing inventory from the command line (everything is relative to the path of the inventory file).
 ```
-./ansible-playbook_wrapper configure_host.yml -K -i path/to/inventory 
+./ansible-playbook_wrapper configure_host.yml -K -i path/to/inventory
 
 ```
+
+### SSH configuration
+
+Copy the file `config_ssh.template` to `config_ssh` in this local folder
+then edit `config_ssh` to configure it. The user must match a user declared
+in ssh_users list in `<rancher_cluster_name>/group_vars/all/vars`
+
+To prevent typing sudo password when using ansible, create for each cluster
+the file `<rancher_cluster_name>/group_vars/all/private` with the following content:
+
+```
+ansible_sudo_pass: your_sudo_password
+```
+
+Where your_sudo_password is the password declared in ssh_users list in `<rancher_cluster_name>/group_vars/all/vars`
+
+Please note that if you are using this mechanism, it will always be used, even if you are using `-k` or `-K`
+
+### Vault
+
+Please add the vault password in `rancher/ansible/.ansible_vault_pass`
 
 ### Workflow to setup rancher from scratch
 
@@ -72,9 +93,9 @@ This ansible install
 * Create local user with ssh_key, put into the group ADM,SUDO and set the password
 * Set machine hostname
 * Configure ssh (disable root login, enforce auth by key)
-* Remove the former ops account 
+* Remove the former ops account
 
-All the next time you must launch 
+All the next time you must launch
 
 ``` /ansible-playbook_wrapper configure_host.yml -K ```
 
@@ -86,10 +107,10 @@ mymachine docker_disks="/dev/sdb,/dev/sdc"
 Note that the playbook will auto extends to 100% of the volume group the /var/lib/docker. So if in future you're out of space on docker partition just override that property and rerun the playbook.
 
 ###  Create a Master
- 
-Create a tag for the new Master, for example 
+
+Create a tag for the new Master, for example
 ```
-[rancher-masters] 
+[rancher-masters]
 host-1
 ```
 
@@ -98,7 +119,7 @@ Configure the create_master.yml for [rancher-masters]
 Launch the playbook
 ```
 ./ansible-playbook_wrapper create_master.yml -K
-``` 
+```
 
 This playbook will create a file apiKey in {{ inventory_dir }}/group_vars/all/apikey. This file contains the RANCHER_API_KEY_ACCOUNT_TOKEN and RANCHER_API_KEY_ACCOUNT_SECRET
 
@@ -117,23 +138,14 @@ Launch the playbook
 ```
 ./ansible-playbook_wrapper create_project.yml -K -e "NAME_PROJECT=my-first-rancher-project"
 ```
- 
+
 This ansible create :
-  
+
 * A project into RANCHER
 * Create "API KEY ENVIRONMENT" into rancher and write into group_vars/{{NAME_PROJECT}}
 * Add Host into the project
-* Install common stacks : Elk, Prometheus, Janitor and load balancer configuration
+* Install some stacks : Janitor
 
-
-### Add Host to a project
-
-Launch the playbook utils_add_host_to_project.yml with the good hosts.
-```
-./ansible-playbook_wrapper utils_add_host_to_project.yml -K -e "NAME_PROJECT=my-first-rancher-project"
-``` 
-
-The playbook will launch on each host the agent Rancher with the good configuration.
 
 ### Utils clean project
 
@@ -150,13 +162,13 @@ To delete one host in a project run the following command
 ## Deployments
 
 Deployments will be performed to developers via jenkins.
-We will provide to dev teams a jenkins instance for their projects with a sample of deployment pipeline. 
+We will provide to dev teams a jenkins instance for their projects with a sample of deployment pipeline.
 Our jenkins instance will have rancher-compose installed and a few utils scripts to simplify deployment.
 
 rancher-compose will require an apikey per project.
 
 Pipeline sample
-``` 
+```
 withEnv(['RANCHER_COMPOSE_HOME=/usr/lib/rancher-compose', 'RANCHER_URL=http://rancher-master:8080/','RANCHER_SECRET_KEY=ABCD','RANCHER_ACCESS_KEY=ABCD']) {
     node {
        stage 'Prepare deploy'
@@ -179,7 +191,7 @@ withEnv(['RANCHER_COMPOSE_HOME=/usr/lib/rancher-compose', 'RANCHER_URL=http://ra
     }
     stage 'Validation in production'
     input message: 'Production OK ?', ok: 'Yes'
- 
+
 }
 ```
 
@@ -194,57 +206,10 @@ For more documentation on this topic check http://docs.rancher.com/rancher/lates
 
 To see our current catalog check https://github.com/AdopteUnOps/rancher-catalog
 
-## Troubleshooting
-
-### On master side
-
-Check host global heatlh (freespace, memory, cpu).
-  
-Check docker state
-```
-sudo service docker status
-```
-
-Check docker daemon logs
-```
-journalctl -u docker
-```
-
-Check system logs
-```
-dmesg
-```
-
-Check the logs of rancherServer container.
-```
-sudo docker logs --tail=1000 -f rancherServer
-```
-
-### On environments hosts
-
-Check container logs, if it doesn't work check the log of network agent container.
-
-Check host global heatlh (freespace, memory, cpu).
-  
-Check docker state
-```
-sudo service docker status
-```
-
-Check docker daemon logs
-```
-journalctl -u docker
-```
-
-Check system logs
-```
-dmesg
-```
-
 ## Disaster recovery
 
 If for some reason the host running rancher-master dies, application will remain up and running, so there is no impact.
-If after running troubleshooting steps you don't have any clue we recommend you to wipe the master machine spawn a new master with "create_master.yml" playbook and run mysql restore script (see above). 
+If after running troubleshooting steps you don't have any clue we recommend you to wipe the master machine spawn a new master with "create_master.yml" playbook and run mysql restore script (see above).
 
 
 ### Quick cleanup procedure (optional)
@@ -292,16 +257,16 @@ Then just run again the create_master.yml playbook.
 It will upgrade rancher-master smoothly.
 When rancher-master is up again it will contact environments host agents and update it if necessary, this operation is done by rancher itself.
 
-## Upgrading docker 
+## Upgrading docker
 
 To update docker you just need to set the docker_version variable.
 If you want to set this version to all rancher platforms, just update it in roles/docker/defaults/main.yml.
 If you want to set this version only for a particular rancher platform, add this variable in your group_vars/all/vars file.
 
-Then run again the configure_host.yml playbook. Note that you will get downtime if your application containers are not resilient as docker will be restarted. 
+Then run again the configure_host.yml playbook. Note that you will get downtime if your application containers are not resilient as docker will be restarted.
 
 ### Docker version caveats
- 
+
 WARNING: At the moment we use docker 1.10.3 which is not available for ubuntu-xenial.
 This was required to deploy gluster fs with convoy as there is a bug right now on docker 1.11 see https://github.com/rancher/rancher/issues/4411
 
