@@ -1,0 +1,2 @@
+---
+rancher_cli_stack_opts: "--pull --upgrade"
