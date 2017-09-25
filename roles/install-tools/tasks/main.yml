@@ -1,0 +1,54 @@
+---
+- name: Install performance tools
+  apt: pkg={{ item }} state=latest cache_valid_time=86400 update_cache=yes
+  with_items:
+   - htop
+   - stress
+   - sysdig
+  become: yes
+
+- name: Install io tools
+  apt: pkg={{ item }} state=latest cache_valid_time=86400 update_cache=yes
+  with_items:
+   - iotop
+   - lsof
+   - sysstat
+  become: yes
+
+- name: Install http tools
+  apt: pkg={{ item }} state=latest cache_valid_time=86400 update_cache=yes
+  with_items:
+   - curl
+   - wget
+   - jq
+   - httpie
+  become: yes
+
+- name: Install network tools
+  apt: pkg={{ item }} state=latest cache_valid_time=86400 update_cache=yes
+  with_items:
+   - net-tools
+   - tcpdump
+   - dnsutils
+   - nethogs
+   - slurm
+   - nload
+   - bmon
+   - tcptrack
+   - speedometer
+   - ifstat
+   - iftop
+  become: yes
+
+- name: Install s3cmd for backup s3 on cleversafe
+  apt: pkg={{ item }} state=latest cache_valid_time=86400 update_cache=yes
+  with_items:
+   - s3cmd
+  become: yes
+
+- name: Install utils packages
+  apt: pkg={{ item }} state=latest cache_valid_time=86400 update_cache=yes
+  with_items:
+   - multitail
+   - tree
+  become: yes
