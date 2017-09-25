@@ -1,0 +1,6 @@
+ssh_users:
+    - name: myuser
+      key: "ssh-rsa ZZZZZYOURSSHKEY"
+      password: "changeme"
+former_ops_users:
+    - name: mygenericaccount
