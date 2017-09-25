@@ -9,7 +9,7 @@
     RANCHER_URL: "{{rancher_master_url}}"
     RANCHER_ACCESS_KEY: "{{ RANCHER_API_KEY_ACCOUNT_TOKEN }}"
     RANCHER_SECRET_KEY: "{{ RANCHER_API_KEY_ACCOUNT_SECRET }}"
-  shell: "rancher env create -t {{rancher_project_template_name}} {{ rancher_normalized_project_name }}"
+  shell: "rancher env create -t {{rancher_project_template_name}} {{ normalized_project_name }}"
   register: create_project
   when: project_file.stat.exists == False
 
