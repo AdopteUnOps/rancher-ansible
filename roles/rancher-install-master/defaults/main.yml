@@ -1,0 +1,4 @@
+---
+rancher_cli_stack_opts: "--pull --upgrade"
+rancher_master_image: "rancher/server:{{ rancher_version }}"
+rancher_agent_image: "rancher/agent:{{rancher_agent_version}}"

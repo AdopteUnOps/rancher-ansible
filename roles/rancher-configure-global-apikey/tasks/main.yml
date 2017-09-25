@@ -1,0 +1,41 @@
+- name: Verify if global apikey exists
+  stat: path="{{ inventory_dir }}/group_vars/all/apikey"
+  register: apikey_file
+  delegate_to: localhost
+
+- name: Add global api key
+  uri:
+   method: POST
+   status_code: 201
+   url: http://{{ RANCHER_MASTER_URL }}:{{ RANCHER_MASTER_PORT }}/v1/apikey
+   body : ' {"type":"apikey","accountId":"1a1","name":"global_ansible","description":null,"created":null,"kind":null,"removeTime":null,"removed":null,"uuid":null}'
+   HEADER_Accept: "application/json"
+   HEADER_Content-Type: "application/json"
+   return_content: yes
+  register: fluxApiKey
+  when: apikey_file.stat.exists == False
+
+- set_fact:
+    RANCHER_API_KEY_ACCOUNT_TOKEN: "{{ fluxApiKey.json['publicValue'] }}"
+    RANCHER_API_KEY_ACCOUNT_SECRET: "{{ fluxApiKey.json['secretValue'] }}"
+  when: apikey_file.stat.exists == False
+
+- name: Generate apikey configuration
+  template:  src=global-apikey.j2 dest="{{ inventory_dir }}/group_vars/all/apikey"
+  delegate_to: localhost
+  when: apikey_file.stat.exists == False
+
+- debug: msg="Rancher apikey generated. You can now vault it with './ansible-vault_wrapper {{ inventory_dir }}/group_vars/all/apikey'"
+  when: apikey_file.stat.exists == False
+
+- name: Enable access control !
+  uri:
+   method: POST
+   status_code: 201
+   url: http://{{ RANCHER_MASTER_URL }}:{{ RANCHER_MASTER_PORT }}/v1/localauthconfigs
+   user: "{{ RANCHER_API_KEY_ACCOUNT_TOKEN }}"
+   password: "{{ RANCHER_API_KEY_ACCOUNT_SECRET }}"
+   HEADER_Accept: "application/json"
+   HEADER_Content-Type: "application/json"
+   body: ' {"accessMode":"unrestricted", "enabled":true, "name":"{{DEVOPS_LOGIN}}", "password":"{{DEVOPS_PASSWORD}}", "username":"{{DEVOPS_LOGIN}}"}'
+  when: apikey_file.stat.exists == False

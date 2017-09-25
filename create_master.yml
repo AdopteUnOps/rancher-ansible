@@ -1,78 +1,9 @@
 ---
 #./ansible-playbook_wrapper create_master.yml -K
-- hosts: rancher-masters
-  gather_facts: no
+- hosts: rancher-master
   roles:
-  - { role: mysql-docker }
-  tasks:
-  - name: Launch rancher master
-    docker:
-      name: rancherServer
-      image: rancher/server:{{ rancher_version }}
-      restart_policy: always
-      state: reloaded
-      ports:
-      - "8080:8080"
-      env:
-        CATTLE_DB_CATTLE_MYSQL_HOST={{ mysql_host }}
-        CATTLE_DB_CATTLE_MYSQL_PORT=3306
-        CATTLE_DB_CATTLE_MYSQL_NAME={{ mysql_database }}
-        CATTLE_DB_CATTLE_USERNAME={{ mysql_user }}
-        CATTLE_DB_CATTLE_PASSWORD={{ mysql_password }}
-    become: yes
-
-  - name: Install rancher-compose
-    shell: "curl https://releases.rancher.com/compose/{{ rancher_compose_version }}/rancher-compose-linux-amd64-{{ rancher_compose_version }}.tar.gz | tar zx --strip-components 2 -C /usr/local/bin"
-    args:
-      creates: /usr/local/bin/rancher-compose
-    become: yes
-
-  - name: Set permissions docker-compose
-    file: path=/usr/local/bin/rancher-compose mode=0700
-    become: yes
-
-  - name: Wait until server is up
-    wait_for: host={{ RANCHER_MASTER_URL }} port={{ RANCHER_MASTER_PORT }} delay=20
-
-  - name: Verify if global apikey exists
-    stat: path="{{ inventory_dir }}/group_vars/all/apikey"
-    register: apikey_file
-    delegate_to: localhost
-
-  - name: Add Api KEY ACCOUNT
-    uri:
-     method: POST
-     status_code: 201
-     url: http://{{ RANCHER_MASTER_URL }}:{{ RANCHER_MASTER_PORT }}/v1/apikey
-     HEADER_User_Agent: "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:44.0) Gecko/20100101 Firefox/44.0"
-     body : ' {"type":"apikey","accountId":"1a1","name":"devops","description":null,"created":null,"kind":null,"removeTime":null,"removed":null,"uuid":null}'
-     HEADER_Accept: "application/json"
-     HEADER_Content-Type: "application/json"
-     return_content: yes
-    register: fluxApiKey
-    when: apikey_file.stat.exists == False
-
-  - set_fact:
-      RANCHER_API_KEY_ACCOUNT_TOKEN: "{{ fluxApiKey.json['publicValue'] }}"
-      RANCHER_API_KEY_ACCOUNT_SECRET: "{{ fluxApiKey.json['secretValue'] }}"
-    when: apikey_file.stat.exists == False
-
-  - name: Generate apikey configuration
-    template:  src=files/apikey.j2 dest="{{ inventory_dir }}/group_vars/all/apikey"
-    delegate_to: localhost
-    when: apikey_file.stat.exists == False
-
-  - debug: msg="Rancher apikey generated. You can now vault it with './ansible-vault_wrapper {{ inventory_dir }}/group_vars/all/apikey'"
-    when: apikey_file.stat.exists == False
-
-  - name: Enable access control !
-    uri:
-     method: POST
-     status_code: 201
-     url: http://{{ RANCHER_MASTER_URL }}:{{ RANCHER_MASTER_PORT }}/v1/localauthconfigs
-     user: "{{ RANCHER_API_KEY_ACCOUNT_TOKEN }}"
-     password: "{{ RANCHER_API_KEY_ACCOUNT_SECRET }}"
-     HEADER_Accept: "application/json"
-     HEADER_Content-Type: "application/json"
-     body: ' {"accessMode":"unrestricted", "enabled":true, "name":"{{DEVOPS_LOGIN}}", "password":"{{DEVOPS_PASSWORD}}", "username":"{{DEVOPS_LOGIN}}"}'
-    when: apikey_file.stat.exists == False
+  - {role: mysql-docker, tags: mysql}
+  - {role: rancher-install-master, tags: rancher-master}
+  - {role: rancher-configure-global-apikey, tags: security}
+  - {role: rancher-configure-catalog, tags: catalogs}
+  #- {role: rancher-configure-default-registry, tags: registry}
