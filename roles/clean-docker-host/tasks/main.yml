@@ -1,5 +1,6 @@
 ---
 #Clean docker on host machine
+
 - name: Stop all docker containers
   shell: docker stop $(docker ps -a -q)
   ignore_errors: true
@@ -15,4 +16,14 @@
 - name: Remove all volumes
   shell: docker volume rm $(docker volume ls -qf dangling=true)
   ignore_errors: true
+  become: yes
+- name: Stop docker
+  service: name=docker state=stopped
+  ignore_errors: false
+  become: yes
+- name: Destroy /etc/docker
+  file: path=/etc/docker state=absent
+  become: yes
+- name: Destroy /var/lib/rancher
+  file: path=/var/lib/rancher state=absent
   become: yes
