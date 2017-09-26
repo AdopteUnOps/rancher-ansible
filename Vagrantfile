@@ -1,7 +1,7 @@
 Vagrant.configure("2") do |config|
   config.vm.define "rancher-master" do |ranchermaster|
     ranchermaster.vm.box = "ubuntu/xenial64"
-    ranchermaster.vm.network "private_network", ip: "192.168.100.10", virtualbox__intnet: true
+    ranchermaster.vm.network "public_network"
     ranchermaster.vm.hostname = "rancher-master.demo"
     #ranchermaster.vm.provider "virtualbox" do |vb|
     #  dockerDisk = '.vagrant/machines/rancher-master/dockerDisk.vdi'
@@ -14,7 +14,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.define "rancher-host1" do |rancherhost1|
     rancherhost1.vm.box = "ubuntu/xenial64"
-    rancherhost1.vm.network "private_network", ip: "192.168.100.20", virtualbox__intnet: true
+    rancherhost1.vm.network "public_network"
     rancherhost1.vm.hostname = "rancher-host1.demo"
     #rancherhost1.vm.provider "virtualbox" do |vb|
     #  dockerDisk = '.vagrant/machines/rancher-host1/dockerDisk.vdi'
@@ -46,8 +46,8 @@ Vagrant.configure("2") do |config|
         "mysql_backup_enabled" => "false",
         "DEVOPS_LOGIN" => "devops",
         "DEVOPS_PASSWORD" => "changeme",
-        "RANCHER_MASTER_URL" => "rancher-master",
-        "RANCHER_MASTER_PORT" => "8080",
+        "rancher_master_host" => "rancher-master",
+        "rancher_master_port" => "8080",
         "rancher_version" => "v1.6.10",
         "rancher_agent_version" => "1.2.6",
         "rancher_catalogs" => "[]"
