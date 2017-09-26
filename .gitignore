@@ -20,3 +20,6 @@
 config_ssh
 
 *.retry
+
+.vagrant
+*.log
