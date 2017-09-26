@@ -5,7 +5,7 @@
 - hosts: "{{ NAME_PROJECT }}"
   gather_facts: false
   tasks:
-  - name: install python 2
+  - name: Make sure python is installed
     raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
     become: true
 
