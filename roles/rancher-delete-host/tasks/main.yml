@@ -10,7 +10,7 @@
     password: "{{ RANCHER_API_KEY_ACCOUNT_SECRET }}"
     HEADER_Accept: "application/json"
     HEADER_Content-Type: "application/json"
-    url: http://{{ RANCHER_MASTER_URL }}:{{ RANCHER_MASTER_PORT }}/v1/projects/{{ PROJECT_ID }}/hosts
+    url: http://{{ rancher_master_host }}:{{ rancher_master_port }}/v1/projects/{{ PROJECT_ID }}/hosts
   register: hostListJson
 
 - name: Deactive Host
@@ -21,7 +21,7 @@
     password: "{{ RANCHER_API_KEY_ACCOUNT_SECRET }}"
     HEADER_Accept: "application/json"
     HEADER_Content-Type: "application/json"
-    url: http://{{ RANCHER_MASTER_URL }}:{{ RANCHER_MASTER_PORT }}/v1/projects/{{ PROJECT_ID }}/hosts/{{item.id}}/?action=deactivate
+    url: http://{{ rancher_master_host }}:{{ rancher_master_port }}/v1/projects/{{ PROJECT_ID }}/hosts/{{item.id}}/?action=deactivate
   when: (NAME_HOST is undefined) or (item.hostname ==  NAME_HOST)
   with_items: "{{hostListJson.json.data}}"
   ignore_errors: yes
@@ -36,7 +36,7 @@
     password: "{{ RANCHER_API_KEY_ACCOUNT_SECRET }}"
     HEADER_Accept: "application/json"
     HEADER_Content-Type: "application/json"
-    url: http://{{ RANCHER_MASTER_URL }}:{{ RANCHER_MASTER_PORT }}/v1/projects/{{ PROJECT_ID }}/hosts/{{item.id}}/?action=remove
+    url: http://{{ rancher_master_host }}:{{ rancher_master_port }}/v1/projects/{{ PROJECT_ID }}/hosts/{{item.id}}/?action=remove
   when: (NAME_HOST is undefined) or (item.hostname ==  NAME_HOST)
   with_items: "{{hostListJson.json.data}}"
   ignore_errors: yes
@@ -51,7 +51,7 @@
     password: "{{ RANCHER_API_KEY_ACCOUNT_SECRET }}"
     HEADER_Accept: "application/json"
     HEADER_Content-Type: "application/json"
-    url: http://{{ RANCHER_MASTER_URL }}:{{ RANCHER_MASTER_PORT }}/v1/projects/{{ PROJECT_ID }}/hosts/{{item.id}}/?action=purge
+    url: http://{{ rancher_master_host }}:{{ rancher_master_port }}/v1/projects/{{ PROJECT_ID }}/hosts/{{item.id}}/?action=purge
   when: (NAME_HOST is undefined) or (item.hostname ==  NAME_HOST)
   with_items: "{{hostListJson.json.data}}"
   ignore_errors: yes

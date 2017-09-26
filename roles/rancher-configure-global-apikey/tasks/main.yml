@@ -7,7 +7,7 @@
   uri:
    method: POST
    status_code: 201
-   url: http://{{ RANCHER_MASTER_URL }}:{{ RANCHER_MASTER_PORT }}/v1/apikey
+   url: http://{{ rancher_master_host }}:{{ rancher_master_port }}/v1/apikey
    body : ' {"type":"apikey","accountId":"1a1","name":"global_ansible","description":null,"created":null,"kind":null,"removeTime":null,"removed":null,"uuid":null}'
    HEADER_Accept: "application/json"
    HEADER_Content-Type: "application/json"
@@ -19,6 +19,11 @@
     RANCHER_API_KEY_ACCOUNT_TOKEN: "{{ fluxApiKey.json['publicValue'] }}"
     RANCHER_API_KEY_ACCOUNT_SECRET: "{{ fluxApiKey.json['secretValue'] }}"
   when: apikey_file.stat.exists == False
+
+- name: Verify group_vars/all folder exist
+  file: path="{{inventory_dir}}/group_vars/all" state=directory
+  delegate_to: localhost
+
 
 - name: Generate apikey configuration
   template:  src=global-apikey.j2 dest="{{ inventory_dir }}/group_vars/all/apikey"
@@ -32,7 +37,7 @@
   uri:
    method: POST
    status_code: 201
-   url: http://{{ RANCHER_MASTER_URL }}:{{ RANCHER_MASTER_PORT }}/v1/localauthconfigs
+   url: http://{{ rancher_master_host }}:{{ rancher_master_port }}/v1/localauthconfigs
    user: "{{ RANCHER_API_KEY_ACCOUNT_TOKEN }}"
    password: "{{ RANCHER_API_KEY_ACCOUNT_SECRET }}"
    HEADER_Accept: "application/json"

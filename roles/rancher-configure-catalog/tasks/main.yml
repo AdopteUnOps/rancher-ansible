@@ -10,4 +10,4 @@
       name: catalog.url
       value: "{{ rancher_catalogs | to_json | string }}"
     body_format: json
-    url: "{{ rancher_master_url }}/v2-beta/settings/catalog.url"
+    url: "http://{{ rancher_master_host }}:{{rancher_master_port}}/v2-beta/settings/catalog.url"

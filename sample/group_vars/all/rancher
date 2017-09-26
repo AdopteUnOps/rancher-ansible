@@ -1,7 +1,7 @@
 DEVOPS_LOGIN: devops
 DEVOPS_PASSWORD: changeme
-RANCHER_MASTER_URL: "{{groups['rancher-master'][0]}}"
-RANCHER_MASTER_PORT: 8080
+rancher_master_host: "{{groups['rancher-master'][0]}}"
+rancher_master_port: 8080
 rancher_version: v1.6.10
 rancher_agent_version: v1.2.6
 
