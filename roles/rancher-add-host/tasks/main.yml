@@ -29,7 +29,7 @@
       - /var/lib/rancher:/var/lib/rancher
       command: "{{rancher_master_url}}/v1/scripts/{{ (rancher_token.content|from_json)['token'] }}"
       env:
-          CATTLE_HOST_LABELS="project={{normalized_project_name}}&server_name={{server_name}}&{{custom_host_tags}}"
+          CATTLE_HOST_LABELS="project={{normalized_project_name}}&{{custom_host_tags}}"
       ports:
           - "8080:8080"
   become: yes
@@ -55,7 +55,7 @@
 
 - name: Rancher host labels
   set_fact:
-    rancher_host_labels: "{{ rancher_host_labels | default({ \"project\": normalized_project_name, \"server_name\": server_name }) | combine( {item.split('=')[0]: item.split('=')[1]} ) }}"
+    rancher_host_labels: "{{ rancher_host_labels | default({ \"project\": normalized_project_name}) | combine( {item.split('=')[0]: item.split('=')[1]} ) }}"
   with_items: "{{ custom_host_tags_array }}"
 
 - name: Rancher host labels request
