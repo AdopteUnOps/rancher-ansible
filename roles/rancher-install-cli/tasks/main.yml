@@ -1,6 +1,6 @@
 ---
 - name: Install rancher-cli
-  shell: "curl {{rancher_cli_download_url}} | tar zx --strip-components 2 -C /usr/local/bin"
+  shell: "curl -L {{rancher_cli_download_url}} | tar zx --strip-components 2 -C /usr/local/bin"
   args:
     creates: /usr/local/bin/rancher
   become: yes
