@@ -13,15 +13,16 @@
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     command: [
-      "--db-host {{ rancher_master_host }}",
+      "--db-host {{ mysql_host }}",
       "--db-port 3306",
       "--db-user {{ mysql_user }}",
       "--db-pass {{ mysql_password }}",
       "--db-name {{ mysql_database }}",
       "--advertise-address {{ ansible_default_ipv4.address }}"
     ]
+  become: true
 
 - name: Wait until server is up
   wait_for:
-    port: {{ RANCHER_MASTER_PORT }}
+    port: "{{ RANCHER_MASTER_PORT }}"
     delay: 30
