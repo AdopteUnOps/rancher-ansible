@@ -3,6 +3,13 @@
 #second time ./ansible-playbook_wrapper configure_host.yml -K  -e "NAME_PROJECT=myproject"
 
 - hosts: "{{ NAME_PROJECT }}"
+  gather_facts: false
+  tasks:
+  - name: install python 2
+    raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+    become: true
+
+- hosts: "{{ NAME_PROJECT }}"
   roles:
   - {role: "install-kernel", tags: "kernel"}
   - {role: "configure-rsyslog", tags: "rsyslog"}
