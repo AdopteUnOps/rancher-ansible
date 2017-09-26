@@ -14,7 +14,7 @@
 
 - name: Add docker apt repo
   apt_repository:
-    repo: 'deb {{docker_repository_url}} ubuntu-{{ ansible_distribution_release }} edge'
+    repo: 'deb {{docker_repository_url}} {{ ansible_distribution_release }} edge'
     mode: 644
     state: present
   become: yes
@@ -28,7 +28,7 @@
 - name: Import the Docker repository key
   apt_key:
     data: "{{lookup('file', 'docker.gpg')}}"
-    id: 2C52609D
+    id: F273FCD8
     state: present
     validate_certs: no
   become: yes
