@@ -8,11 +8,11 @@
   become: yes
 
 - name: Create a mysql docker container
-  docker:
+  docker_container:
       name: mysql
       image: mysql:{{ mysql_version }}
       restart_policy: always
-      state: reloaded
+      state: started
       volumes:
       - /etc/mysql/conf.d:/etc/mysql/conf.d
       - /var/lib/mysql:/var/lib/mysql
@@ -26,10 +26,10 @@
   become: yes
 
 - name: Create mysql backup
-  docker:
+  docker_container:
     name: mysql-backup-s3
     image: schickling/postgres-backup-s3
-    state: reloaded
+    state: started
     env:
       S3_ACCESS_KEY_ID={{ mysql_s3_access_key }}
       S3_SECRET_ACCESS_KEY={{ mysql_s3_secret_key }}
@@ -44,11 +44,11 @@
   when: mysql_backup_enabled == True
 
 - name: Configure mysql optimize
-  docker:
+  docker_container:
       name: mysql-optimizer
       image: adopteunops/mysql-optimizer:latest
       restart_policy: always
-      state: reloaded
+      state: started
       links:
       - "mysql:mysql"
       env:
