@@ -12,4 +12,5 @@
 - meta: flush_handlers
 
 - name: Waiting for host to be up again after reboot if kernel is upgraded
-  local_action: wait_for host={{ ansible_host }} port=22 timeout=300 delay=10
+  local_action: wait_for host={{ ansible_host }} port={{ ansible_ssh_port }} timeout=300 delay=10
+  #  delegate_to: localhost
