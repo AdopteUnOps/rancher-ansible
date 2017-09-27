@@ -13,7 +13,7 @@
   template: src={{STACK_NAME}}/rancher-compose.yml dest=stacks/{{STACK_NAME}}/rancher-compose.yml
 
 - name: run rancher-compose upgrade
-  command: "rancher --debug --url {{rancher_master_url}} --access-key {{RANCHER_API_PROJECT_ACCESS_TOKEN}} --secret-key {{RANCHER_API_PROJECT_ACCESS_SECRET}} up -s {{STACK_NAME | quote}} -d {{rancher_compose_opts}}"
+  command: "rancher --debug --url {{rancher_master_url}} --access-key {{RANCHER_API_PROJECT_ACCESS_TOKEN}} --secret-key {{RANCHER_API_PROJECT_ACCESS_SECRET}} up -s {{STACK_NAME | quote}} -d {{rancher_cli_stack_opts}}"
   args:
     chdir: "stacks/{{STACK_NAME}}"
   register: stack_upgrade
