@@ -44,24 +44,27 @@
       Accept: "application/json"
       Content-Type: "application/json"
   register: rancher_hosts_list
-  until: rancher_hosts_list.json.data |  selectattr('hostname', 'equalto', ansible_host) | map(attribute='id') | list | length > 0
+  until: rancher_hosts_list.json.data |  selectattr('hostname', 'equalto', inventory_hostname) | map(attribute='id') | list | length > 0
   retries: 15
   delay: 5
 
 - name: Extract current host id and prepare host labels
   set_fact:
-    rancher_host_ids: "{{rancher_hosts_list.json.data |  selectattr('hostname', 'equalto', ansible_host) | map(attribute='id') | list }}"
+    rancher_host_ids: "{{rancher_hosts_list.json.data |  selectattr('hostname', 'equalto', inventory_hostname) | map(attribute='id') | list }}"
     custom_host_tags_array: "{{ custom_host_tags.split('&') }}"
+  when: custom_host_tags != ""    
 
 - name: Rancher host labels
   set_fact:
     rancher_host_labels: "{{ rancher_host_labels | default({ \"project\": normalized_project_name}) | combine( {item.split('=')[0]: item.split('=')[1]} ) }}"
   with_items: "{{ custom_host_tags_array }}"
+  when: custom_host_tags != ""
 
 - name: Rancher host labels request
   set_fact:
     rancher_host_labels_request: "{{ {\"labels\": rancher_host_labels} }}"
     rancher_host_id: "{{ rancher_host_ids[0] }}"
+  when: custom_host_tags != ""
 
 - name: Update host tags in rancher
   uri:
