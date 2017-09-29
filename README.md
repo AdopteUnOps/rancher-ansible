@@ -41,6 +41,13 @@ The machine for tools will be identified with specific label on it (role=tools).
 
 * Ansible >= 2.3
 
+### Roles dependencies 
+
+First you need to fetch roles with ansible galaxy :
+```
+ansible-galaxy install -r requirements.yml
+```
+
 ### Rancher platforms
 
 Each rancher platform will have it's own configuration (inventory + group_vars + hosts_vars).
