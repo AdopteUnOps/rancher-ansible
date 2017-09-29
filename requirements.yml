@@ -15,3 +15,7 @@
 - src: AdopteUnOps.rancher-add-host
 - src: AdopteUnOps.rancher-install-stack
 - src: AdopteUnOps.rancher-configure-catalog
+- src: AdopteUnOps.clean-docker-host
+- src: AdopteUnOps.rancher-delete-host
+- src: AdopteUnOps.rancher-delete-project
+ 

@@ -5,11 +5,11 @@
 - hosts: rancher-masters
   gather_facts: no
   roles:
-  - delete-one-host-rancher
+  - AdopteUnOps.rancher-delete-host
 
 - vars:
     NAME_HOST: "{{ NAME_PROJECT }}"
   hosts: "{{ NAME_HOST }}"
   gather_facts: no
   roles:
-  - clean-docker-host
+  - AdopteUnOps.rancher-clean-docker-host
