@@ -3,15 +3,13 @@
 - hosts: "{{ NAME_PROJECT}}[0]"
   gather_facts: no
   roles:
-  - {role: rancher-install-cli, tags: rancher-cli}
-  - {role: rancher-create-project, tags: rancher-create-project}
+  - {role: AdopteUnOps.rancher-create-project, tags: rancher-create-project}
 
 - hosts: "{{ NAME_PROJECT }}"
-  gather_facts: no
   roles:
-  - rancher-add-host
+  - {role: AdopteUnOps.rancher-add-host, tags: add-host}
 
 - hosts: "{{ NAME_PROJECT}}[0]"
   gather_facts: no
   roles:
-  - {role: rancher-install-stack, STACK_NAME: janitor, tags: install-stack}
+  - {role: AdopteUnOps.rancher-install-stack, stack_name: janitor, tags: install-stack}

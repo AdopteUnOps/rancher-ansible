@@ -23,3 +23,5 @@ config_ssh
 
 .vagrant
 *.log
+
+roles/AdopteUnOps.*

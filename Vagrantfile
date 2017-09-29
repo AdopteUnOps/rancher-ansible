@@ -20,14 +20,8 @@ Vagrant.configure("2") do |config|
           "mysql_database" => "rancher",
           "mysql_user" => "rancher",
           "mysql_password" => "rancher",
-          "mysql_backup_enabled" => "false",
-          "DEVOPS_LOGIN" => "devops",
-          "DEVOPS_PASSWORD" => "changeme",
           "rancher_master_host" => "192.168.100.10",
           "rancher_master_port" => "8080",
-          "rancher_version" => "v1.6.10",
-          "rancher_agent_version" => "v1.2.6",
-          "rancher_catalogs" => "[ ]"
         },
 
       }
@@ -51,8 +45,7 @@ Vagrant.configure("2") do |config|
           "rancher_master_host" => "192.168.100.10",
           "rancher_master_port" => "8080",
           "rancher_master_url" => "http://{{rancher_master_host}}:{{rancher_master_port}}",
-          "rancher_agent_version" => "v1.2.6",
-          "normalized_project_name" => "{{NAME_PROJECT|lower}}"
+          "rancher_project_name" => "{{NAME_PROJECT | lower }}"
         }
       }
       ansible.raw_arguments = ["-e NAME_PROJECT=demo-project"]

@@ -11,11 +11,11 @@
 
 - hosts: "{{ NAME_PROJECT }}"
   roles:
-  - {role: "install-kernel", tags: "kernel"}
-  - {role: "configure-rsyslog", tags: "rsyslog"}
-  - {role: "configure-hostname", tags: "configure-hostname"}
-  - {role: "configure-ssh", tags: "configure-ssh"}
-  - {role: "install-tools", tags: "install-tools"}
-  - {role: "docker", tags: "install-docker"}
-  - {role: "upgrade-packages", tags: "upgrade-packages"}
-  - {role: "configure-ops-accounts", tags: "ops"}
+  - {role: "AdopteUnOps.install-kernel", tags: "kernel"}
+  - {role: "AdopteUnOps.configure-rsyslog", tags: "rsyslog"}
+  - {role: "AdopteUnOps.configure-hostname", tags: "configure-hostname"}
+  - {role: "AdopteUnOps.configure-ssh", tags: "configure-ssh"}
+  - {role: "AdopteUnOps.install-debugging-tools", tags: "install-tools"}
+  - {role: "AdopteUnOps.docker", tags: "install-docker"}
+  - {role: "AdopteUnOps.upgrade-packages", tags: "upgrade-packages"}
+  - {role: "AdopteUnOps.configure-unix-accounts", tags: "ops"}

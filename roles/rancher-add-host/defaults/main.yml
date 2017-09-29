@@ -1,4 +1,0 @@
----
-# defaults file for add-host-to-environment
-custom_host_tags: ""
-rancher_agent_image: "rancher/agent:{{rancher_agent_version}}"

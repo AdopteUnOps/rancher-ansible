@@ -1,6 +1,0 @@
-rancher_project_template_name: "Cattle"
-use_custom_registry: False
-docker_registry_url: ""
-docker_registry_username: ""
-docker_registry_password: ""
-docker_registry_email: ""

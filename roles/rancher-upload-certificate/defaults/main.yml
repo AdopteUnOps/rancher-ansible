@@ -1,2 +1,0 @@
-common_name: "{{rancher_dns_subdomain_fqdn}}"
-subj_alt_names: []
