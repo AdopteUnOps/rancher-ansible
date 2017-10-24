@@ -6,6 +6,9 @@
   - {role: AdopteUnOps.rancher-create-project, tags: rancher-create-project}
 
 - hosts: "{{ NAME_PROJECT }}"
+  pre_tasks:
+  # force reload of apikey, as it's cached by ansible when we first trigger the playbook
+  - include_vars: "{{ inventory_dir }}/group_vars/{{ NAME_PROJECT }}/apikey.yml"
   roles:
   - {role: AdopteUnOps.rancher-add-host, tags: add-host}
 
