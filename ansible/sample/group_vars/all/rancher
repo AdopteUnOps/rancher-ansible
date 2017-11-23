@@ -1,0 +1,18 @@
+DEVOPS_LOGIN: devops
+DEVOPS_PASSWORD: changeme
+rancher_master_host: "{{groups['rancher-master'][0]}}"
+rancher_master_port: 8080
+rancher_version: v1.6.10
+rancher_agent_version: v1.2.6
+
+rancher_catalogs:
+  catalogs:
+    library:
+      url: https://git.rancher.io/rancher-catalog.git
+      branch: "${RELEASE}"
+    community:
+      url: https://git.rancher.io/community-catalog.git
+      branch: master
+    adopteunops-catalog:
+      url: https://github.com/AdopteUnOps/rancher-catalog.git
+      branch: master

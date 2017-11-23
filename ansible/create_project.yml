@@ -1,0 +1,18 @@
+---
+#./ansible-playbook_wrapper create_project.yml -K -e "NAME_PROJECT=myproject"
+- hosts: "{{ NAME_PROJECT}}[0]"
+  gather_facts: no
+  roles:
+  - {role: AdopteUnOps.rancher-create-project, tags: rancher-create-project}
+
+- hosts: "{{ NAME_PROJECT }}"
+  pre_tasks:
+  # force reload of apikey, as it's cached by ansible when we first trigger the playbook
+  - include_vars: "{{ inventory_dir }}/group_vars/{{ NAME_PROJECT }}/apikey.yml"
+  roles:
+  - {role: AdopteUnOps.rancher-add-host, tags: add-host}
+
+- hosts: "{{ NAME_PROJECT}}[0]"
+  gather_facts: no
+  roles:
+  - {role: AdopteUnOps.rancher-install-stack, stack_name: janitor, tags: install-stack}

@@ -1,0 +1,20 @@
+version: '2'
+services:
+  cleanup:
+    privileged: true
+    image: meltwater/docker-cleanup:1.8.0
+    environment:
+      CLEAN_PERIOD: '3600'
+      DEBUG: '0'
+      DELAY_TIME: '900'
+      KEEP_CONTAINERS: '*:*'
+      KEEP_CONTAINERS_NAMED: '*-datavolume'
+      KEEP_IMAGES: rancher/
+      LOOP: 'true'
+    network_mode: none
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - /var/lib/docker:/var/lib/docker
+    labels:
+      io.rancher.scheduler.affinity:host_label_ne: janitor.exclude=true
+      io.rancher.scheduler.global: 'true'

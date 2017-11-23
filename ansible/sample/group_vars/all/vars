@@ -1,0 +1,1 @@
+normalized_project_name: "{{ NAME_PROJECT | lower}}"
