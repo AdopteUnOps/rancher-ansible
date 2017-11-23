@@ -1,0 +1,12 @@
+#!/bin/bash
+SCRIPTPATH=`dirname $0`
+sshconfig_file=${SCRIPTPATH}/config_ssh
+if [ ! -d ${HOME}/.ansible/cp ]; then
+	mkdir -p ${HOME}/.ansible/cp
+fi
+if [ -f ${sshconfig_file} ]; then
+scp -F ${sshconfig_file}  -o ControlMaster=auto -o ControlPersist=30m -o ControlPath="${HOME}/.ansible/cp/ansible-ssh-%h-%p-%r" "$@"
+else
+scp -o ControlMaster=auto -o ControlPersist=30m -o ControlPath="${HOME}/.ansible/cp/ansible-ssh-%h-%p-%r" "$@"
+fi
+

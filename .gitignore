@@ -1,3 +1,5 @@
+terraform.tfvars
+.terraform
 *.swp
 *.swo
 *~
