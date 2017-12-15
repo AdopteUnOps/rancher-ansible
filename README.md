@@ -286,3 +286,9 @@ To make sure ansible does try to discover ubuntu version on hosts itself we have
 ```
 
 We highly recommend to upgrade to docker 1.11 or higher (if supported by rancher) when this bug will be fixed.
+
+### Example
+
+You can see an example of this project : https://github.com/AdopteUnOps/ansible-collect-data
+
+Ansible Collect Data it's a project to collect logs and metrics with the stack Kafka, Elasticsearch, Prometheus and other stuff.
