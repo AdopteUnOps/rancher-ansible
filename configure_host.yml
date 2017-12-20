@@ -17,5 +17,6 @@
   - {role: "AdopteUnOps.configure-ssh", tags: "configure-ssh"}
   - {role: "AdopteUnOps.install-debugging-tools", tags: "install-tools"}
   - {role: "AdopteUnOps.docker", tags: "install-docker"}
+  - {role: "AdopteUnOps.docker-login", tags: "install-docker"}
   - {role: "AdopteUnOps.upgrade-packages", tags: "upgrade-packages"}
   - {role: "AdopteUnOps.configure-unix-accounts", tags: "ops"}

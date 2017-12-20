@@ -5,6 +5,7 @@
 - src: AdopteUnOps.configure-ssh
 - src: AdopteUnOps.install-debugging-tools
 - src: AdopteUnOps.docker
+- src: AdopteUnOps.docker-login
 - src: AdopteUnOps.upgrade-packages
 - src: AdopteUnOps.configure-unix-accounts
 
@@ -18,4 +19,3 @@
 - src: AdopteUnOps.clean-docker-host
 - src: AdopteUnOps.rancher-delete-host
 - src: AdopteUnOps.rancher-delete-project
- 
